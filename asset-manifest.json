@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.abd64e84.css",
-    "main.js": "/static/js/main.67fc1bcf.js",
-    "index.html": "/index.html",
-    "main.abd64e84.css.map": "/static/css/main.abd64e84.css.map",
-    "main.67fc1bcf.js.map": "/static/js/main.67fc1bcf.js.map"
+    "main.css": "/photo-tagging-game/static/css/main.abd64e84.css",
+    "main.js": "/photo-tagging-game/static/js/main.67fc1bcf.js",
+    "index.html": "/photo-tagging-game/index.html",
+    "main.abd64e84.css.map": "/photo-tagging-game/static/css/main.abd64e84.css.map",
+    "main.67fc1bcf.js.map": "/photo-tagging-game/static/js/main.67fc1bcf.js.map"
   },
   "entrypoints": [
     "static/css/main.abd64e84.css",
