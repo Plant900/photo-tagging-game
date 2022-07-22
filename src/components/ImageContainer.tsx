@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { SyntheticEvent, useEffect, useState, useRef } from 'react'
 import { Gameboard } from './Gameboard'
 import '../styles/Main.css'
 
@@ -12,13 +12,37 @@ type ImageSizeInfo = {
 }
 
 export const ImageContainer = ({ url }: ImageContainerProps) => {
-  let [imageSize, setImageSize] = useState<ImageSizeInfo | null>()
+  let imgEl = useRef<HTMLImageElement>(null)
+  let [imageSize, setImageSize] = useState<ImageSizeInfo>()
+  let [numberOfSquares, setNumberOfSquares] = useState<Number | null>(null)
+
+  let determineSquareCount = (size: ImageSizeInfo | undefined) => {
+    if (size) {
+      let rows = size.width.valueOf() / 40
+      let columns = size.height.valueOf() / 40
+      let number = Math.floor(rows * columns)
+      setNumberOfSquares(number + 10)
+    }
+  }
+
+  let onImageLoad = (info: any) => {
+    let imageSize = { width: info.naturalWidth, height: info.naturalHeight }
+    setImageSize(imageSize)
+    determineSquareCount(imageSize)
+    console.log(imageSize)
+  }
 
   useEffect(() => {
-    let image = document.getElementById('image-1') as HTMLImageElement
-    setImageSize({ width: image.naturalWidth, height: image.naturalHeight })
-    console.log(imageSize)
-  }, [])
+    const imgElCurrent = imgEl.current
+
+    if (imgElCurrent) {
+      imgElCurrent.addEventListener('load', () => onImageLoad(imgElCurrent))
+      return () =>
+        imgElCurrent.removeEventListener('load', () =>
+          onImageLoad(imgElCurrent)
+        )
+    }
+  }, [imgEl])
 
   return (
     <div className="image-container">
@@ -28,8 +52,9 @@ export const ImageContainer = ({ url }: ImageContainerProps) => {
         src={
           'https://cdna.artstation.com/p/assets/images/images/034/427/268/large/egor-klyuchnyk-x-2-seasons-bt.jpg?1612271497'
         }
+        ref={imgEl}
       />
-      <Gameboard height={25} width={25} />
+      <Gameboard numberOfSquares={numberOfSquares} />
     </div>
   )
 }
