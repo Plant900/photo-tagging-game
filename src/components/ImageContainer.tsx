@@ -1,5 +1,6 @@
-import React, { SyntheticEvent, useEffect, useState, useRef } from 'react'
-import { Gameboard } from './Gameboard'
+import React, { useEffect, useState } from 'react'
+import { getDocs, collection } from 'firebase/firestore'
+import { db } from '../Firebase'
 import '../styles/Main.css'
 
 type ImageContainerProps = {
@@ -11,11 +12,55 @@ type GuessArea = {
   y: Number
 }
 
+type GuessStatus = {
+  name: string
+  hasBeenGuessed: boolean
+}[]
+
 export const ImageContainer = ({ url }: ImageContainerProps) => {
   let [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 })
+  let [guessStatus, setGuessStatus] = useState<GuessStatus>([])
 
-  // takes coordinates and checks with database?
-  let checkGuess = () => {}
+  const locationsRef = collection(db, 'characterLocations')
+
+  let jabbaArea = { x: 1205, y: 3799, width: 76, height: 100 }
+
+  // takes coordinates and checks with database
+  // info in database will be like correctGuess below
+  let checkGuess = async ({ x, y }: GuessArea) => {
+    let characterLocations = await getDocs(locationsRef)
+    characterLocations.docs.map((doc) => {
+      let characterData = doc.data()
+    })
+
+    // if (
+    //   x < correctGuess.x + correctGuess.width &&
+    //   x > correctGuess.x - correctGuess.width &&
+    //   y < correctGuess.y + correctGuess.height &&
+    //   y > correctGuess.y - correctGuess.height
+    // ) {
+    //   console.log('Within bounds')
+    // } else {
+    //   console.log('Out of bounds')
+    // }
+  }
+
+  useEffect(() => {
+    console.log(guessArea)
+    checkGuess(guessArea)
+  }, [guessArea])
+
+  useEffect(() => {
+    const getCharacters = async () => {
+      let characters = await getDocs(locationsRef)
+      let status: GuessStatus = []
+      characters.docs.map((doc) => {
+        status.push({ name: doc.id, hasBeenGuessed: false })
+      })
+      setGuessStatus(status)
+    }
+    getCharacters()
+  }, [])
 
   return (
     <div className="image-container">
@@ -29,62 +74,6 @@ export const ImageContainer = ({ url }: ImageContainerProps) => {
         }}
         useMap="#image-map"
       />
-      <map name="image-map">
-        <area shape="circle" coords={`${guessArea.x},${guessArea.y}, 30`} />
-      </map>
     </div>
   )
 }
-
-// type ImageSizeInfo = {
-//   width: Number
-//   height: Number
-// }
-
-// export const ImageContainer = ({ url }: ImageContainerProps) => {
-//   let imgEl = useRef<HTMLImageElement>(null)
-//   let [imageSize, setImageSize] = useState<ImageSizeInfo>()
-//   let [numberOfSquares, setNumberOfSquares] = useState<Number | null>(null)
-
-//   let determineSquareCount = (size: ImageSizeInfo | undefined) => {
-//     if (size) {
-//       let rows = size.width.valueOf() / 40
-//       let columns = size.height.valueOf() / 40
-//       let number = Math.floor(rows * columns)
-//       setNumberOfSquares(number + 10)
-//     }
-//   }
-
-//   let onImageLoad = (info: any) => {
-//     let imageSize = { width: info.naturalWidth, height: info.naturalHeight }
-//     setImageSize(imageSize)
-//     determineSquareCount(imageSize)
-//     console.log(imageSize)
-//   }
-
-//   useEffect(() => {
-//     const imgElCurrent = imgEl.current
-
-//     if (imgElCurrent) {
-//       imgElCurrent.addEventListener('load', () => onImageLoad(imgElCurrent))
-//       return () =>
-//         imgElCurrent.removeEventListener('load', () =>
-//           onImageLoad(imgElCurrent)
-//         )
-//     }
-//   }, [imgEl])
-
-//   return (
-//     <div className="image-container">
-//       <img
-//         className="image-1"
-//         id="image-1"
-//         src={
-//           'https://cdna.artstation.com/p/assets/images/images/034/427/268/large/egor-klyuchnyk-x-2-seasons-bt.jpg?1612271497'
-//         }
-//         ref={imgEl}
-//       />
-//       <Gameboard numberOfSquares={numberOfSquares} />
-//     </div>
-//   )
-// }
