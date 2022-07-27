@@ -2,6 +2,8 @@
   position: relative;
   height: auto;
   width: auto;
+  height: 100%;
+  width: 100%;
 }
 
 .image-map {
@@ -9,6 +11,10 @@
   left: 0px;
   top: 0px;
   z-index: 1000;
+}
+
+#guess-area {
+  background-color: white;
 }
 
 .gameboard-container {
