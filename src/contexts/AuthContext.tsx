@@ -16,10 +16,11 @@ export function useAuth() {
 }
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
 
   const signInWithGoogle = async () => {
     const credential = await signInWithPopup(auth, provider)
+    setUser(credential.user)
   }
 
   const value = {

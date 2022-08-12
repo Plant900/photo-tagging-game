@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { getDocs, collection, doc } from 'firebase/firestore'
+import React, { useContext, useEffect, useState } from 'react'
+import { getDocs, collection, doc, setDoc } from 'firebase/firestore'
+import { GameStatus, GuessStatus, TimerContext } from './App'
 import { db } from '../Firebase'
 import '../styles/Main.css'
+import { AuthContext } from '../contexts/AuthContext'
+import { Timer } from './Timer'
+import { Scoreboard } from './Scoreboard'
 
 type ImageContainerProps = {
   url: string
@@ -27,7 +31,11 @@ type GuessStatus = {
 
 export const ImageContainer = ({ url }: ImageContainerProps) => {
   let [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 })
-  let [guessStatus, setGuessStatus] = useState<GuessStatus>([])
+
+  let { setIsTimerActive, timerSeconds } = useContext(TimerContext)
+  let { user } = useContext(AuthContext)
+  let { setIsGameWon } = useContext(GameStatus)
+  let { guessStatus, setGuessStatus } = useContext(GuessStatus)
 
   const locationsRef = collection(db, 'characterLocations')
 
@@ -62,59 +70,81 @@ export const ImageContainer = ({ url }: ImageContainerProps) => {
   }, [guessArea])
 
   useEffect(() => {
-    if (guessStatus.every((item) => item.hasBeenGuessed === true)) {
+    let setScore = async () => {
+      if (user) {
+        let uid = user.uid
+
+        await setDoc(
+          doc(db, 'scores', uid),
+          { name: String(user.displayName), time: timerSeconds },
+          { merge: true }
+        )
+      }
+    }
+
+    if (
+      guessStatus.length > 0 &&
+      guessStatus.every((item) => item.hasBeenGuessed === true)
+    ) {
       console.log('You win')
+      setIsTimerActive(false)
+      setIsGameWon(true)
+      setScore()
     }
   }, [guessStatus])
 
   useEffect(() => {
     const getCharacters = async () => {
-      let characters = await getDocs(locationsRef)
+      if (guessStatus.length === 0) {
+        let characters = await getDocs(locationsRef)
 
-      let status: GuessStatus = []
+        let status: GuessStatus = []
 
-      characters.docs.map((doc) => {
-        status.push({
-          character: { ...(doc.data() as CharacterInfo) },
-          name: doc.id,
-          hasBeenGuessed: false,
+        characters.docs.map((doc) => {
+          status.push({
+            character: { ...(doc.data() as CharacterInfo) },
+            name: doc.id,
+            hasBeenGuessed: false,
+          })
         })
-        console.log(status)
-      })
-      setGuessStatus(status)
+        setGuessStatus(status)
+      }
     }
     getCharacters()
-    console.log(guessStatus)
   }, [])
 
   return (
-    <div className="image-container">
-      <img
-        src={url}
-        onClick={(e) => {
-          let bounds = e.currentTarget.getBoundingClientRect()
-          let x = e.clientX - bounds.left
-          let y = e.clientY - bounds.top
-          setGuessArea({ x, y })
-        }}
-      />
-      {guessStatus.map((item) => {
-        if (item.hasBeenGuessed) {
-          return (
-            <div
-              key={item.name}
-              className="correct-guess-marker"
-              style={{
-                position: 'absolute',
-                left: `${Number(item.character.x) - 50}px`,
-                top: `${Number(item.character.y) - 50}px`,
-              }}
-            >
-              &#x2713;
-            </div>
-          )
-        }
-      })}
+    <div>
+      <Timer />
+      <div className="image-container">
+        <img
+          src={url}
+          onClick={(e) => {
+            let bounds = e.currentTarget.getBoundingClientRect()
+            let x = e.clientX - bounds.left
+            let y = e.clientY - bounds.top
+            setGuessArea({ x, y })
+          }}
+        />
+        {guessStatus.map((item) => {
+          console.log(item)
+          if (item.hasBeenGuessed) {
+            return (
+              <div
+                key={item.name}
+                className="correct-guess-marker"
+                style={{
+                  position: 'absolute',
+                  left: `${Number(item.character.x) - 50}px`,
+                  top: `${Number(item.character.y) - 50}px`,
+                }}
+              >
+                &#x2713;
+              </div>
+            )
+          }
+        })}
+      </div>
     </div>
   )
 }

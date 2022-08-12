@@ -1,5 +1,12 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 .image-container {
   display: flex;
+  flex-direction: column nowrap;
   height: auto;
   width: auto;
   height: 100%;
@@ -20,4 +27,34 @@
   width: 100px;
   height: 100px;
   z-index: 1000;
+}
+
+.header-links {
+  display: flex;
+  gap: 22px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.header-link {
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
+  color: rgb(98, 98, 167);
+  border: 1px solid gray;
+  border-radius: 6px;
+  padding: 15px;
+  width: 100px;
+
+  font-family: 'russo one';
+  font-size: 20px;
+}
+
+.header-link:hover {
+  background-color: rgb(224, 224, 224);
+}
+
+.header-buttons {
+  display: flex;
+  margin-top: 20px;
 }

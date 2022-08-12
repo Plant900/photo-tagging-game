@@ -1,0 +1,29 @@
+.picture-selector-container {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.picture-selector-img-container {
+  max-height: 500px;
+  max-width: 300px;
+  box-shadow: 6px 6px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.picture-selector-img-container img {
+  display: block;
+  max-height: 500px;
+  max-width: 300px;
+  width: auto;
+  height: auto;
+  overflow: hidden;
+}
+
+.picture-selector-img-container img:hover,
+.picture-selector-img-container:hover {
+  max-height: 510px;
+  max-width: 310px;
+
+  cursor: pointer;
+}
