@@ -1,5 +1,5 @@
 {
-  "homepage": "https://plant900.github.io/photo-tagging-game",
+  "homepage": "https://plant900.github.io/photo-tagging-game/home",
   "name": "photo-tagging-game",
   "version": "0.1.0",
   "private": true,
@@ -15,6 +15,7 @@
     "firebase": "^9.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "typeface-russo-one": "^1.1.13",
