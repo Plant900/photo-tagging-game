@@ -2,15 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: fixed;
   min-width: 100px;
   max-width: 200px;
-  z-index: 10;
-  right: 0;
-  top: 0;
+
   height: 83px;
 
-  background-color: rgba(201, 201, 201, 0.199);
   color: rgb(255, 126, 126);
 
   font-family: 'russo one';

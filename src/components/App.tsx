@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import { AuthContext } from '../contexts/AuthContext'
 import { ImageContainer } from './ImageContainer'
 import { Scoreboard } from './Scoreboard'
@@ -26,7 +26,7 @@ type CharacterInfo = {
   x: Number
   y: Number
 }
-type GuessStatus = {
+export type GuessStatus = {
   character: CharacterInfo
   name: string
   hasBeenGuessed: boolean
@@ -40,13 +40,13 @@ function App() {
   const { user, signInWithGoogle } = useContext(AuthContext)
 
   let [isGameWon, setIsGameWon] = useState(false)
-
   let [guessStatus, setGuessStatus] = useState<GuessStatus>([])
-
   let [isTimerActive, setIsTimerActive] = useState(false)
   let [timerSeconds, setTimerSeconds] = useState(0)
-
-  let [pictureSelection, setPictureSelection] = useState<string | null>(null)
+  let [pictureSelection, setPictureSelection] = useState<{
+    url: string
+    title: string
+  } | null>(null)
 
   return (
     <TimerContext.Provider
@@ -55,17 +55,20 @@ function App() {
       <GameStatus.Provider value={{ isGameWon, setIsGameWon }}>
         <GuessStatus.Provider value={{ guessStatus, setGuessStatus }}>
           <BrowserRouter>
-            <div className="header-links">
-              <Link className={'header-link'} to="/photo-tagging-game">
+            <nav className="header-links">
+              <NavLink className={'header-link'} to="photo-tagging-game">
                 Play
-              </Link>
-              <Link className={'header-link'} to="/photo-tagging-game/scores">
+              </NavLink>
+              <NavLink
+                className={'header-link'}
+                to="/photo-tagging-game/scores"
+              >
                 Scoreboard
-              </Link>
-            </div>
-            <div className="App">
+              </NavLink>
               <div className="header-buttons">
-                <button
+                <Link
+                  to="/photo-tagging-game"
+                  className="header-button choose-game-button"
                   onClick={() => {
                     setPictureSelection(null)
                     setIsGameWon(false)
@@ -73,17 +76,23 @@ function App() {
                     setTimerSeconds(0)
                   }}
                 >
-                  Choose Game
+                  Choose game
+                </Link>
+                <button className="header-button" onClick={signInWithGoogle}>
+                  Sign in with Google
                 </button>
-                <button onClick={signInWithGoogle}>Sign in with Google</button>
               </div>
-
+            </nav>
+            <div className="App">
               <Routes>
                 <Route
                   path="/photo-tagging-game"
                   element={
                     pictureSelection ? (
-                      <ImageContainer url="https://cdna.artstation.com/p/assets/images/images/034/427/268/large/egor-klyuchnyk-x-2-seasons-bt.jpg?1612271497" />
+                      <ImageContainer
+                        url={pictureSelection.url}
+                        title={pictureSelection.title}
+                      />
                     ) : (
                       <PictureSelector
                         setPictureSelection={setPictureSelection}
@@ -93,7 +102,15 @@ function App() {
                 />
                 <Route
                   path="/photo-tagging-game/scores"
-                  element={<Scoreboard />}
+                  element={
+                    pictureSelection ? (
+                      <Scoreboard title={pictureSelection.title} />
+                    ) : (
+                      <PictureSelector
+                        setPictureSelection={setPictureSelection}
+                      />
+                    )
+                  }
                 />
               </Routes>
             </div>

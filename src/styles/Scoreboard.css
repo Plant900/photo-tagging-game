@@ -1,0 +1,10 @@
+.scoreboard-container {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 20px;
+
+  font-size: 20px;
+  font-weight: bold;
+  color: rgb(240, 233, 228);
+}

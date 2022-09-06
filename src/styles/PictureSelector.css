@@ -1,23 +1,19 @@
 .picture-selector-container {
   display: flex;
+  flex-flow: row wrap;
   gap: 50px;
   justify-content: center;
   margin-top: 100px;
 }
 
-.picture-selector-img-container {
-  max-height: 500px;
-  max-width: 300px;
-  box-shadow: 6px 6px 5px 0px rgba(0, 0, 0, 0.75);
-}
+/* .picture-selector-img-container {
+} */
 
 .picture-selector-img-container img {
+  box-shadow: 6px 6px 5px 0px rgba(0, 0, 0, 0.75);
   display: block;
   max-height: 500px;
   max-width: 300px;
-  width: auto;
-  height: auto;
-  overflow: hidden;
 }
 
 .picture-selector-img-container img:hover,
@@ -26,4 +22,12 @@
   max-width: 310px;
 
   cursor: pointer;
+}
+
+.picture-selector-message {
+  color: rgb(177, 154, 154);
+  font-size: 20px;
+  margin: 0;
+  font-weight: bold;
+  width: 100%;
 }
