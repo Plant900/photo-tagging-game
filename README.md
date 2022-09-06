@@ -1,5 +1,7 @@
 # About the project
 
+https://plant900.github.io/photo-tagging-game/
+
 The Photo Tagging Game is a simple "Where's Waldo"-style web app using React and Firebase for authentication and data storage.
 
 # Download
