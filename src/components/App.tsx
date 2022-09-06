@@ -59,15 +59,12 @@ function App() {
               <NavLink className={'header-link'} to="photo-tagging-game">
                 Play
               </NavLink>
-              <NavLink
-                className={'header-link'}
-                to="/photo-tagging-game/scores"
-              >
+              <NavLink className={'header-link'} to="photo-tagging-game/scores">
                 Scoreboard
               </NavLink>
               <div className="header-buttons">
                 <Link
-                  to="/photo-tagging-game"
+                  to="photo-tagging-game"
                   className="header-button choose-game-button"
                   onClick={() => {
                     setPictureSelection(null)
@@ -86,7 +83,7 @@ function App() {
             <div className="App">
               <Routes>
                 <Route
-                  path="/photo-tagging-game"
+                  path="photo-tagging-game"
                   element={
                     pictureSelection ? (
                       <ImageContainer
@@ -101,7 +98,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/photo-tagging-game/scores"
+                  path="photo-tagging-game/scores"
                   element={
                     pictureSelection ? (
                       <Scoreboard title={pictureSelection.title} />
