@@ -1,6 +1,6 @@
 # About the project
 
-The Photo Tagging Game is a simple "Where's Waldo"-style web app using React and Firebase.
+The Photo Tagging Game is a simple "Where's Waldo"-style web app using React and Firebase for authentication and data storage.
 
 # Download
 
