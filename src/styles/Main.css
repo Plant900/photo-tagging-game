@@ -146,3 +146,11 @@ a.active {
   margin-top: 40px;
   color: rgb(187, 66, 66);
 }
+
+.user-info-div {
+  display: flex;
+  justify-content: center;
+
+  color: white;
+  font-size: 15px;
+}

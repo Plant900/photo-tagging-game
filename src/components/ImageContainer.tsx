@@ -14,7 +14,7 @@ type ImageContainerProps = {
   title: string
 }
 
-type GuessArea = {
+export type GuessArea = {
   x: Number
   y: Number
 }

@@ -1,0 +1,38 @@
+.level-creator-container {
+  position: relative;
+}
+
+.coords-container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  color: white;
+
+  background-color: rgba(59, 61, 63, 0.856);
+}
+
+.img-container {
+  position: relative;
+}
+
+.guess-area-marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-style: solid;
+  border-width: 4px;
+  border-color: rgb(1, 2, 0);
+
+  width: 100px;
+  height: 100px;
+
+  cursor: default;
+}
+
+.level-creator-upload-image {
+  color: white;
+}

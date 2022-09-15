@@ -1,6 +1,7 @@
 import React from 'react'
 import '../styles/CharacterList.css'
 import { GuessStatus } from './App'
+import { LevelInfo } from './LevelCreator'
 
 type CharacterListProps = {
   url: string

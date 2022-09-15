@@ -5,6 +5,7 @@ import { ImageContainer } from './ImageContainer'
 import { Scoreboard } from './Scoreboard'
 import { PictureSelector } from './PictureSelector'
 import '../App.css'
+import { LevelCreator } from './LevelCreator'
 
 type TimerProps = {
   isTimerActive: boolean
@@ -20,7 +21,7 @@ type GameStatusProps = {
 }
 export const GameStatus = createContext<GameStatusProps>(null as any)
 
-type CharacterInfo = {
+export type CharacterInfo = {
   height: Number
   width: Number
   x: Number
@@ -62,6 +63,12 @@ function App() {
               <NavLink className={'header-link'} to="photo-tagging-game/scores">
                 Scoreboard
               </NavLink>
+              <NavLink
+                to={'photo-tagging-game/level-creator'}
+                className="header-button"
+              >
+                Level Creator
+              </NavLink>
               <div className="header-buttons">
                 <Link
                   to="photo-tagging-game"
@@ -78,6 +85,9 @@ function App() {
                 <button className="header-button" onClick={signInWithGoogle}>
                   Sign in with Google
                 </button>
+                <div className="user-info-div">
+                  {user ? `Signed in as ${user.displayName}` : 'Not signed in'}
+                </div>
               </div>
             </nav>
             <div className="App">
@@ -108,6 +118,10 @@ function App() {
                       />
                     )
                   }
+                />
+                <Route
+                  path="photo-tagging-game/level-creator"
+                  element={<LevelCreator />}
                 />
               </Routes>
             </div>

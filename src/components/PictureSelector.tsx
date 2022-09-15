@@ -1,4 +1,7 @@
-import React from 'react'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../Firebase'
+import { getStorage, ref, getDownloadURL } from 'firebase/storage'
+import React, { useEffect, useState } from 'react'
 import '../styles/PictureSelector.css'
 
 type PictureSelectorProps = {
@@ -7,48 +10,86 @@ type PictureSelectorProps = {
   >
 }
 
+type LevelList = {
+  levelName: string
+  imageName: string
+  url?: string
+}[]
+
 export const PictureSelector = ({
   setPictureSelection,
 }: PictureSelectorProps) => {
+  const [levelList, setLevelList] = useState<LevelList>([])
+
+  const storage = getStorage()
+  const levelsRef = collection(db, 'art')
+  const imagesRef = ref(storage, 'images')
+
+  let getLevels = async () => {
+    let getLevelNameInfo = async () => {
+      let newLevelList: {
+        levelName: string
+        imageName: string
+        url?: string
+      }[] = []
+
+      let levels = await getDocs(levelsRef)
+
+      levels.forEach((level) => {
+        let data = level.data()
+        newLevelList.push({
+          levelName: data.levelName,
+          imageName: data.imageName,
+        })
+      })
+
+      return newLevelList
+    }
+    let levelNameInfo = await getLevelNameInfo()
+
+    let getLevelImageInfo = async () => {
+      let newLevelList = []
+
+      for (const level of levelNameInfo) {
+        let downloadURL = await getDownloadURL(
+          ref(storage, `images/${level.imageName}`)
+        )
+        newLevelList.push({
+          levelName: level.levelName,
+          imageName: level.imageName,
+          url: downloadURL,
+        })
+      }
+      return newLevelList
+    }
+
+    let finalResult = await getLevelImageInfo()
+    setLevelList(finalResult)
+  }
+
+  useEffect(() => {
+    getLevels()
+  }, [])
+
   return (
     <div className="picture-selector-container">
       <div className="picture-selector-message">First, choose a picture</div>
-      <div className="picture-selector-img-container">
-        <img
-          src="https://cdna.artstation.com/p/assets/images/images/034/427/268/large/egor-klyuchnyk-x-2-seasons-bt.jpg?1612271497"
-          title="egor-klyuchnyk-AD2022"
-          onClick={(e) => {
-            setPictureSelection({
-              url: (e.target as HTMLInputElement).src,
-              title: (e.target as HTMLInputElement).title,
-            })
-          }}
-        />
-      </div>
-      <div className="picture-selector-img-container">
-        <img
-          src="https://dcassetcdn.com/design_img/2065112/127172/127172_11001040_2065112_cb56bdd1_image.jpg"
-          title="toys-room"
-          onClick={(e) => {
-            setPictureSelection({
-              url: (e.target as HTMLInputElement).src,
-              title: (e.target as HTMLInputElement).title,
-            })
-          }}
-        />
-      </div>
-      <div className="picture-selector-img-container">
-        <img
-          src="https://r4.wallpaperflare.com/wallpaper/489/218/502/waldo-puzzles-where-s-wally-wallpaper-49e038adb12afdaba667184f60e1c6cd.jpg"
-          title="waldo-sports-meet"
-          onClick={(e) => {
-            setPictureSelection({
-              url: (e.target as HTMLInputElement).src,
-              title: (e.target as HTMLInputElement).title,
-            })
-          }}
-        />
-      </div>
+      {levelList?.map((level) => {
+        return (
+          <div className="picture-selector-img-container" key={level.levelName}>
+            <img
+              src={level.url}
+              title={level.levelName}
+              onClick={(e) => {
+                setPictureSelection({
+                  url: (e.target as HTMLInputElement).src,
+                  title: (e.target as HTMLInputElement).title,
+                })
+              }}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
