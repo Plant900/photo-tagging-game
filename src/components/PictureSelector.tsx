@@ -6,12 +6,17 @@ import '../styles/PictureSelector.css'
 
 type PictureSelectorProps = {
   setPictureSelection: React.Dispatch<
-    React.SetStateAction<{ url: string; title: string } | null>
+    React.SetStateAction<{
+      url: string
+      title: string
+      gamemode: number
+    } | null>
   >
 }
 
 type LevelList = {
   levelName: string
+  numberOfGamemodes?: number
   imageName: string
   url?: string
 }[]
@@ -27,20 +32,19 @@ export const PictureSelector = ({
 
   let getLevels = async () => {
     let getLevelNameInfo = async () => {
-      let newLevelList: {
-        levelName: string
-        imageName: string
-        url?: string
-      }[] = []
+      let newLevelList: LevelList = []
 
       let levels = await getDocs(levelsRef)
 
       levels.forEach((level) => {
         let data = level.data()
+
         newLevelList.push({
           levelName: data.levelName,
+          numberOfGamemodes: data.numberOfGamemodes,
           imageName: data.imageName,
         })
+        console.log(newLevelList)
       })
 
       return newLevelList
@@ -73,7 +77,7 @@ export const PictureSelector = ({
 
   return (
     <div className="picture-selector-container">
-      <div className="picture-selector-message">First, choose a picture</div>
+      <div className="picture-selector-message">First, choose a level</div>
       {levelList?.map((level) => {
         return (
           <div className="picture-selector-img-container" key={level.levelName}>
@@ -84,9 +88,11 @@ export const PictureSelector = ({
                 setPictureSelection({
                   url: (e.target as HTMLInputElement).src,
                   title: (e.target as HTMLInputElement).title,
+                  gamemode: 0,
                 })
               }}
             />
+            <div className="gamemode-selector">{`${level.numberOfGamemodes}`}</div>
           </div>
         )
       })}

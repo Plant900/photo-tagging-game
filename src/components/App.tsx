@@ -47,6 +47,7 @@ function App() {
   let [pictureSelection, setPictureSelection] = useState<{
     url: string
     title: string
+    gamemode: number
   } | null>(null)
 
   return (
@@ -99,6 +100,7 @@ function App() {
                       <ImageContainer
                         url={pictureSelection.url}
                         title={pictureSelection.title}
+                        gamemode={pictureSelection.gamemode}
                       />
                     ) : (
                       <PictureSelector
@@ -111,7 +113,10 @@ function App() {
                   path="photo-tagging-game/scores"
                   element={
                     pictureSelection ? (
-                      <Scoreboard title={pictureSelection.title} />
+                      <Scoreboard
+                        title={pictureSelection.title}
+                        gamemode={pictureSelection.gamemode}
+                      />
                     ) : (
                       <PictureSelector
                         setPictureSelection={setPictureSelection}

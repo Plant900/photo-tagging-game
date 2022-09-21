@@ -12,6 +12,7 @@ import Draggable from 'react-draggable'
 type ImageContainerProps = {
   url: string
   title: string
+  gamemode: number
 }
 
 export type GuessArea = {
@@ -26,7 +27,11 @@ type CharacterInfo = {
   y: Number
 }
 
-export const ImageContainer = ({ url, title }: ImageContainerProps) => {
+export const ImageContainer = ({
+  url,
+  title,
+  gamemode,
+}: ImageContainerProps) => {
   let [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 })
   let [isGuessSelectorActive, setIsGuessSelectorActive] = useState(false)
 
@@ -35,8 +40,11 @@ export const ImageContainer = ({ url, title }: ImageContainerProps) => {
   let { setIsGameWon } = useContext(GameStatus)
   let { guessStatus, setGuessStatus } = useContext(GuessStatus)
 
-  const locationsRef = collection(db, `art/${title}/characterLocations`)
-  const scoresRef = collection(db, `art/${title}/scores`)
+  const locationsRef = collection(
+    db,
+    `art/${title}/${gamemode}/data/characterLocations`
+  )
+  const scoresRef = collection(db, `art/${title}/${gamemode}/data/scores`)
 
   let checkGuess = async ({ x, y }: GuessArea, characterGuess: string) => {
     let characterLocations = await getDocs(locationsRef)
@@ -84,7 +92,7 @@ export const ImageContainer = ({ url, title }: ImageContainerProps) => {
 
         if (update) {
           await setDoc(
-            doc(db, `art/${title}/scores`, uid),
+            doc(db, `art/${title}/${gamemode}/data/scores`, uid),
             { name: String(user.displayName), time: timerSeconds },
             { merge: true }
           )

@@ -10,14 +10,17 @@ type PlayerScores = {
 
 type ScoreboardProps = {
   title: string | null
+  gamemode: number | null
 }
 
-export const Scoreboard = ({ title }: ScoreboardProps) => {
+export const Scoreboard = ({ title, gamemode }: ScoreboardProps) => {
   let [playerScores, setPlayerScores] = useState<PlayerScores>()
 
   useEffect(() => {
     let getPlayerScores = async () => {
-      let scores = await getDocs(collection(db, `art/${title}/scores`))
+      let scores = await getDocs(
+        collection(db, `art/${title}/${gamemode}/data/scores`)
+      )
       let scoreArray: any = []
       scores.forEach((score) => scoreArray.push(score.data()))
       setPlayerScores(scoreArray)
