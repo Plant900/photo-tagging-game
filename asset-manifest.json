@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/photo-tagging-game/static/css/main.7e923fb6.css",
-    "main.js": "/photo-tagging-game/static/js/main.2a81afd5.js",
+    "main.css": "/photo-tagging-game/static/css/main.6183c455.css",
+    "main.js": "/photo-tagging-game/static/js/main.9caa07f1.js",
     "static/media/russo-one-all-400-normal.woff": "/photo-tagging-game/static/media/russo-one-all-400-normal.d077bcf73b1bb3fdcacf.woff",
     "static/media/russo-one-latin-400-normal.woff2": "/photo-tagging-game/static/media/russo-one-latin-400-normal.d973f367962785e06ddd.woff2",
     "static/media/russo-one-cyrillic-400-normal.woff2": "/photo-tagging-game/static/media/russo-one-cyrillic-400-normal.617bf411082776bf2261.woff2",
     "static/media/russo-one-latin-ext-400-normal.woff2": "/photo-tagging-game/static/media/russo-one-latin-ext-400-normal.5b078dd3fd594657af46.woff2",
     "index.html": "/photo-tagging-game/index.html",
-    "main.7e923fb6.css.map": "/photo-tagging-game/static/css/main.7e923fb6.css.map",
-    "main.2a81afd5.js.map": "/photo-tagging-game/static/js/main.2a81afd5.js.map"
+    "main.6183c455.css.map": "/photo-tagging-game/static/css/main.6183c455.css.map",
+    "main.9caa07f1.js.map": "/photo-tagging-game/static/js/main.9caa07f1.js.map"
   },
   "entrypoints": [
-    "static/css/main.7e923fb6.css",
-    "static/js/main.2a81afd5.js"
+    "static/css/main.6183c455.css",
+    "static/js/main.9caa07f1.js"
   ]
 }
