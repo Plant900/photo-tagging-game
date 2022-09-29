@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 50px;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.imgContainer {
+  position: relative;
+}
+
+.gamemodesContainer {
+  position: absolute;
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
+  top: 0px;
+}
+
+.gamemodesMessage {
+  font-size: 15px;
+  background-color: rgba(0, 0, 0, 0.596);
+  color: rgb(247, 247, 247);
+  margin-bottom: 10px;
+}
+
+.gamemodes {
+  display: flex;
+  justify-content: space-around;
+}
+
+.gamemode {
+  font-size: 50px;
+
+  border-style: solid;
+  border-radius: 15px;
+  padding: 10px;
+  background-color: rgba(194, 194, 194, 0.425);
+}
+
+.gamemode:hover {
+  cursor: pointer;
+  border-style: solid;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.151);
+}
+
+.imgContainer img {
+  box-shadow: 6px 6px 5px 0px rgba(0, 0, 0, 0.75);
+  display: block;
+  max-height: 500px;
+  max-width: 300px;
+}
+
+.message {
+  text-align: center;
+  color: rgb(177, 154, 154);
+  font-size: 20px;
+  margin: 0;
+  font-weight: bold;
+  width: 100%;
+}
+
+.levelMsg {
+  position: absolute;
+  width: 75px;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px;
+  background-color: rgb(168, 81, 70);
+  left: 0px;
+  box-shadow: 6px 6px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.userLevelMsg {
+  background-color: rgb(89, 148, 71);
+}

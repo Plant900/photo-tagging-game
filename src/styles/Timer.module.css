@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px;
+  max-width: 200px;
+
+  height: 83px;
+
+  color: rgb(255, 126, 126);
+
+  font-family: 'russo one';
+  font-size: 45px;
+}

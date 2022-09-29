@@ -1,0 +1,48 @@
+.mainContainer {
+  position: absolute;
+  right: 20px;
+  align-self: flex-end;
+}
+
+.profileImg {
+  cursor: pointer;
+
+  border-radius: 100px;
+  border-style: solid;
+  border-color: rgb(206, 206, 206);
+  border-width: 1px;
+  width: 60px;
+  height: 60px;
+}
+
+.itemsContainer {
+  position: relative;
+}
+
+.items {
+  gap: 10px;
+  padding: 3px;
+  border-radius: 10px;
+  margin-top: -10px;
+  list-style-type: none;
+  position: absolute;
+  right: 50px;
+  border: 1px solid rgb(85, 85, 85);
+  width: 150px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  background-color: rgb(58, 58, 58);
+}
+
+.items li {
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0;
+  width: 100%;
+  color: rgb(228, 228, 228);
+}
+.items li:hover {
+  background-color: rgb(90, 90, 90);
+}

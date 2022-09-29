@@ -1,0 +1,56 @@
+.headerLinks {
+  display: flex;
+  gap: 22px;
+  margin-top: 20px;
+  justify-content: center;
+
+  position: relative;
+}
+
+.headerLink,
+.headerButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: rgb(79, 79, 184);
+  border: 1px solid gray;
+  border-radius: 6px;
+  padding: 15px;
+  min-width: 100px;
+  height: 25px;
+
+  font-family: 'russo one';
+  font-size: 20px;
+
+  background-color: white;
+}
+
+.chooseGameButton {
+  padding: 2px;
+}
+
+.headerButtons {
+  flex-direction: column;
+  margin: 0;
+  gap: 0;
+}
+
+.headerButton {
+  color: rgb(187, 66, 66);
+  font-size: 15px;
+}
+
+.headerButton:hover {
+  background-color: rgb(224, 224, 224);
+  cursor: pointer;
+}
+
+a.active {
+  background-color: rgba(255, 234, 234, 0.836);
+}
+
+.headerLink:hover {
+  background-color: rgb(224, 224, 224);
+}
+
