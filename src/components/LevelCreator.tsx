@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { GuessArea } from './ImageContainer'
 import { getStorage, ref, uploadBytes } from 'firebase/storage'
 import { LevelCreatorCharacterList } from './LevelCreatorCharacterList'
-import '../styles/LevelCreator.css'
-import { setDoc, doc, collection, writeBatch } from 'firebase/firestore'
+import { doc, writeBatch } from 'firebase/firestore'
 import { db } from '../Firebase'
+import styles from '../styles/LevelCreator.module.css'
+import uniqid from 'uniqid'
+import { AuthContext } from '../contexts/AuthContext'
 
 const storage = getStorage()
 
@@ -25,6 +27,8 @@ export type LevelInfo = {
 }
 
 export const LevelCreator = () => {
+  const { user } = useContext(AuthContext)
+
   const [selectedImage, setSelectedImage] = useState<File | undefined>()
   const [currentCharacterSet, setCurrentCharacterSet] = useState<number>(0)
   const [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 })
@@ -38,8 +42,6 @@ export const LevelCreator = () => {
     x: 0,
     y: 0,
   })
-
-  const imagesRef = ref(storage, `images/${levelInfo.levelName}`)
 
   let addCharacterSet = (number: number) => {
     if (levelInfo.characterSets[number]) {
@@ -56,33 +58,32 @@ export const LevelCreator = () => {
   }
 
   let uploadLevel = async () => {
-    if (selectedImage && levelInfo.characterSets[0].length > 0) {
-      uploadBytes(imagesRef, selectedImage).then((snapshot) => {
+    if (selectedImage && levelInfo.characterSets[0].length > 0 && user) {
+      uploadBytes(
+        ref(storage, `images/${levelInfo.levelName}-${selectedImage.name}`),
+        selectedImage
+      ).then((snapshot) => {
         console.log('Image uploaded to database')
       })
 
       const batch = writeBatch(db)
 
-      batch.set(doc(db, `art/${levelInfo.levelName}`), {
-        url: levelInfo.url,
-        numberOfGamemodes: levelInfo.characterSets.length,
-        levelName: levelInfo.levelName,
-        imageName: levelInfo.levelName,
+      batch.set(doc(db, `art/${levelInfo.levelName}-${selectedImage.name}`), {
+        numberOfGamemodes: Array.from(
+          Array(levelInfo.characterSets.length).keys()
+        ),
+        levelName: `${levelInfo.levelName}`,
+        levelID: `${levelInfo.levelName}-${selectedImage.name}`,
+        imageID: `${levelInfo.levelName}-${selectedImage.name}`,
+        uploadedBy: user.email,
       })
-
-      for (let i = 0; i < levelInfo.characterSets.length; i++) {
-        batch.set(doc(db, `art/${levelInfo.levelName}/${i}/data/scores/init`), {
-          name: 'init',
-          time: 10000,
-        })
-      }
 
       for (let i = 0; i < levelInfo.characterSets.length; i++) {
         levelInfo.characterSets[i].forEach((character) => {
           batch.set(
             doc(
               db,
-              `art/${levelInfo.levelName}/${i}/data/characterLocations/${character.name}`
+              `art/${levelInfo.levelName}-${selectedImage.name}/${i}/data/characterLocations/${character.name}`
             ),
             {
               height: 50,
@@ -106,22 +107,24 @@ export const LevelCreator = () => {
   }, [guessArea])
 
   return (
-    <div className="level-creator-container">
-      <div className="level-creator-upload-container">
+    <div className={styles.container}>
+      <div className={styles.uploadContainer}>
         Upload image
         <input
-          className="level-creator-upload-image"
+          className={styles.uploadImage}
           type="file"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             if (
               e.target.files &&
               e.target.files[0].name.match(/.(jpg|jpeg|png)$/i)
             ) {
-              setSelectedImage(e.target.files[0])
+              const renamedFile = new File([e.target.files[0]], uniqid())
+              console.log('renamed', renamedFile)
+              setSelectedImage(renamedFile)
 
-              let thing = URL.createObjectURL(e.target.files[0])
+              let imageURL = URL.createObjectURL(renamedFile)
 
-              let newLevelInfo = { ...levelInfo, url: thing }
+              let newLevelInfo = { ...levelInfo, url: imageURL }
               setLevelInfo(newLevelInfo)
             } else if (
               e.target.files &&
@@ -129,13 +132,11 @@ export const LevelCreator = () => {
             ) {
               alert('File must be an image of type .jpg, .jpeg, or .png')
             }
-
-            console.log(selectedImage)
           }}
         />
       </div>
 
-      <div className="img-container">
+      <div className={styles.imgContainer}>
         <img
           src={levelInfo.url}
           onClick={(e) => {
@@ -147,7 +148,7 @@ export const LevelCreator = () => {
         />
         {selectedImage ? (
           <div
-            className="guess-area-marker"
+            className={styles.guessAreaMarker}
             style={{
               zIndex: '10600',
               position: 'absolute',
@@ -162,13 +163,13 @@ export const LevelCreator = () => {
         )}
       </div>
 
-      <div className="coords-container">
+      <div className={styles.coordsContainer}>
         <div>{`x: ${guessArea?.x.toFixed(0)}, y: ${guessArea?.y.toFixed(
           0
         )}`}</div>
-        <div className="coords-container-tooltip">
+        <div className={styles.coordsContainerTooltip}>
           &#9432;
-          <span className="coords-container-tooltiptext">
+          <span className={styles.coordsContainerTooltipText}>
             You may create multiple 'gamemodes' for your level using the Set
             buttons. When a player views your level on the main menu, they will
             be able to choose between sets. Your level may have a maximum of 3
@@ -244,6 +245,11 @@ export const LevelCreator = () => {
         >
           Submit level
         </button>
+        {!user ? (
+          <div className={styles.signInMessage}>Sign in to upload</div>
+        ) : (
+          ''
+        )}
         {levelInfo ? (
           <LevelCreatorCharacterList
             levelInfo={{ ...levelInfo }}

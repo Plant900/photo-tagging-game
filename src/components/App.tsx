@@ -4,8 +4,9 @@ import { AuthContext } from '../contexts/AuthContext'
 import { ImageContainer } from './ImageContainer'
 import { Scoreboard } from './Scoreboard'
 import { PictureSelector } from './PictureSelector'
-import '../App.css'
+import styles from '../styles/App.module.css'
 import { LevelCreator } from './LevelCreator'
+import { UserInfo } from './UserInfo'
 
 type TimerProps = {
   isTimerActive: boolean
@@ -47,6 +48,7 @@ function App() {
   let [pictureSelection, setPictureSelection] = useState<{
     url: string
     title: string
+    levelID: string
     gamemode: number
   } | null>(null)
 
@@ -57,23 +59,26 @@ function App() {
       <GameStatus.Provider value={{ isGameWon, setIsGameWon }}>
         <GuessStatus.Provider value={{ guessStatus, setGuessStatus }}>
           <BrowserRouter>
-            <nav className="header-links">
-              <NavLink className={'header-link'} to="photo-tagging-game">
+            <nav className={styles.headerLinks}>
+              <NavLink className={styles.headerLink} to="photo-tagging-game">
                 Play
               </NavLink>
-              <NavLink className={'header-link'} to="photo-tagging-game/scores">
+              <NavLink
+                className={styles.headerLink}
+                to="photo-tagging-game/scores"
+              >
                 Scoreboard
               </NavLink>
               <NavLink
                 to={'photo-tagging-game/level-creator'}
-                className="header-button"
+                className={styles.headerButton}
               >
                 Level Creator
               </NavLink>
-              <div className="header-buttons">
+              <div className={styles.headerButtons}>
                 <Link
                   to="photo-tagging-game"
-                  className="header-button choose-game-button"
+                  className={`${styles.headerButton} ${styles.chooseGameButton}`}
                   onClick={() => {
                     setPictureSelection(null)
                     setIsGameWon(false)
@@ -83,13 +88,14 @@ function App() {
                 >
                   Choose game
                 </Link>
-                <button className="header-button" onClick={signInWithGoogle}>
+                <button
+                  className={styles.headerButton}
+                  onClick={signInWithGoogle}
+                >
                   Sign in with Google
                 </button>
-                <div className="user-info-div">
-                  {user ? `Signed in as ${user.displayName}` : 'Not signed in'}
-                </div>
               </div>
+              <UserInfo />
             </nav>
             <div className="App">
               <Routes>
@@ -100,6 +106,7 @@ function App() {
                       <ImageContainer
                         url={pictureSelection.url}
                         title={pictureSelection.title}
+                        levelID={pictureSelection.levelID}
                         gamemode={pictureSelection.gamemode}
                       />
                     ) : (
@@ -115,6 +122,7 @@ function App() {
                     pictureSelection ? (
                       <Scoreboard
                         title={pictureSelection.title}
+                        levelID={pictureSelection.levelID}
                         gamemode={pictureSelection.gamemode}
                       />
                     ) : (

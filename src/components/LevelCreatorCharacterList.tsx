@@ -1,7 +1,6 @@
-import { url } from 'inspector'
 import React from 'react'
-import { CharacterList } from './CharacterList'
 import { LevelInfo } from './LevelCreator'
+import styles from '../styles/CharacterList.module.css'
 
 type LevelCreatorCharacterListProps = {
   levelInfo: LevelInfo
@@ -22,8 +21,8 @@ export const LevelCreatorCharacterList = ({
       levelInfo.characterSets[currentCharacterSet].length > 0 ? (
         levelInfo.characterSets[currentCharacterSet].map((item) => {
           return (
-            <div className="character-list-container">
-              <div className="character-list-img-container">
+            <div className={styles.container} key={item.name}>
+              <div className={styles.imgContainer}>
                 <img
                   src={url}
                   style={{

@@ -1,17 +1,12 @@
-import React, { useEffect, useContext } from 'react'
+import { useEffect, useContext } from 'react'
 import { GameStatus, TimerContext } from './App'
-import { useState } from 'react'
-import '../styles/Timer.css'
+import styles from '../styles/Timer.module.css'
 import '@fontsource/russo-one'
 
 export const Timer = () => {
   let { isTimerActive, setIsTimerActive, timerSeconds, setTimerSeconds } =
     useContext(TimerContext)
   let { isGameWon } = useContext(GameStatus)
-
-  let toggle = () => {
-    setIsTimerActive((isTimerActive = !isTimerActive))
-  }
 
   useEffect(() => {
     if (!isGameWon) {
@@ -32,7 +27,7 @@ export const Timer = () => {
   }, [isTimerActive])
 
   return (
-    <div className="timer-container">
+    <div className={styles.container}>
       <div>{`${timerSeconds}`}</div>
     </div>
   )

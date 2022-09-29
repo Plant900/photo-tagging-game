@@ -2,16 +2,17 @@ import React, { useContext, useEffect, useState } from 'react'
 import { getDocs, collection, doc, setDoc, getDoc } from 'firebase/firestore'
 import { GameStatus, GuessStatus, TimerContext } from './App'
 import { db } from '../Firebase'
-import '../styles/Main.css'
+import '../styles/Global.css'
 import { AuthContext } from '../contexts/AuthContext'
 import { Timer } from './Timer'
-import { Scoreboard } from './Scoreboard'
 import { CharacterList } from './CharacterList'
 import Draggable from 'react-draggable'
+import styles from '../styles/ImageContainer.module.css'
 
 type ImageContainerProps = {
   url: string
   title: string
+  levelID: string
   gamemode: number
 }
 
@@ -30,6 +31,7 @@ type CharacterInfo = {
 export const ImageContainer = ({
   url,
   title,
+  levelID,
   gamemode,
 }: ImageContainerProps) => {
   let [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 })
@@ -42,9 +44,9 @@ export const ImageContainer = ({
 
   const locationsRef = collection(
     db,
-    `art/${title}/${gamemode}/data/characterLocations`
+    `art/${levelID}/${gamemode}/data/characterLocations`
   )
-  const scoresRef = collection(db, `art/${title}/${gamemode}/data/scores`)
+  const scoresRef = collection(db, `art/${levelID}/${gamemode}/data/scores`)
 
   let checkGuess = async ({ x, y }: GuessArea, characterGuess: string) => {
     let characterLocations = await getDocs(locationsRef)
@@ -92,7 +94,7 @@ export const ImageContainer = ({
 
         if (update) {
           await setDoc(
-            doc(db, `art/${title}/${gamemode}/data/scores`, uid),
+            doc(db, `art/${levelID}/${gamemode}/data/scores`, uid),
             { name: String(user.displayName), time: timerSeconds },
             { merge: true }
           )
@@ -134,16 +136,15 @@ export const ImageContainer = ({
   return (
     <div>
       <Draggable axis="x" bounds="parent">
-        <div className="timer-character-list-container">
+        <div className={styles.timerCharacterListContainer}>
           <Timer />
           <CharacterList url={url} characterList={guessStatus} />
         </div>
       </Draggable>
 
-      <div className="image-container">
-        <div className="image-container-interior">
+      <div className={styles.imageContainer}>
+        <div className={styles.imageContainerInterior}>
           <img
-            id="main-picture"
             draggable="false"
             src={url}
             onClick={(e) => {
@@ -159,7 +160,7 @@ export const ImageContainer = ({
               return (
                 <div
                   key={item.name}
-                  className="correct-guess-marker"
+                  className={styles.correctGuessMarker}
                   style={{
                     position: 'absolute',
                     left: `${Number(item.character.x) - 50}px`,
@@ -172,7 +173,7 @@ export const ImageContainer = ({
             }
           })}
           <div
-            className="guess-character-selector"
+            className={styles.guessCharacterSelector}
             style={{
               zIndex: '10600',
               position: 'absolute',
