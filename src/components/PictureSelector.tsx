@@ -127,8 +127,9 @@ export const PictureSelector = ({
                 Your level
               </div>
             ) : (
-              // <div className={styles.levelMsg}>{level.uploadedBy}</div>
-              ''
+              <div className={styles.levelMsg}>
+                {level.uploadedBy.split('@')[0]}
+              </div>
             )}
           </div>
         )
