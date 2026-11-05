@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { GuessArea } from './ImageContainer'
-import { getStorage, ref, uploadBytes } from 'firebase/storage'
 import { LevelCreatorCharacterList } from './LevelCreatorCharacterList'
 import { doc, writeBatch } from 'firebase/firestore'
 import { db } from '../Firebase'
+import { uploadImage } from '../cloudinary'
 import styles from '../styles/LevelCreator.module.css'
 import { AuthContext } from '../contexts/AuthContext'
-
-const storage = getStorage()
 
 type CharacterSet = {
   characters: CharacterInfo[]
@@ -58,12 +56,19 @@ export const LevelCreator = () => {
 
   let uploadLevel = async () => {
     if (selectedImage && levelInfo.characterSets[0].length > 0 && user) {
-      uploadBytes(
-        ref(storage, `images/${levelInfo.levelName}-${selectedImage.name}`),
-        selectedImage
-      ).then((snapshot) => {
-        console.log('Image uploaded to database')
-      })
+      if (!levelInfo.levelName.trim() || levelInfo.levelName.includes('/')) {
+        alert('Level name must not be empty or contain "/"')
+        return
+      }
+
+      let imageURL: string
+      try {
+        imageURL = await uploadImage(selectedImage)
+      } catch (error) {
+        console.error(error)
+        alert('Image upload failed, level was not saved.')
+        return
+      }
 
       const batch = writeBatch(db)
 
@@ -75,6 +80,7 @@ export const LevelCreator = () => {
         levelID: `${levelInfo.levelName}-${selectedImage.name}`,
         imageID: `${levelInfo.levelName}-${selectedImage.name}`,
         uploadedBy: user.email,
+        url: imageURL,
       })
 
       for (let i = 0; i < levelInfo.characterSets.length; i++) {

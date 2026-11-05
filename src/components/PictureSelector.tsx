@@ -1,6 +1,5 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../Firebase'
-import { getStorage, ref, getDownloadURL } from 'firebase/storage'
 import React, { useEffect, useState, useContext } from 'react'
 import styles from '../styles/PictureSelector.module.css'
 import { AuthContext } from '../contexts/AuthContext'
@@ -31,50 +30,29 @@ export const PictureSelector = ({
 
   const [levelList, setLevelList] = useState<LevelList>([])
 
-  const storage = getStorage()
   const levelsRef = collection(db, 'art')
 
   let getLevels = async () => {
-    let getLevelNameInfo = async () => {
-      let newLevelList: LevelList = []
+    let newLevelList: LevelList = []
 
-      let levels = await getDocs(levelsRef)
+    let levels = await getDocs(levelsRef)
 
-      levels.forEach((level) => {
-        let data = level.data()
+    levels.forEach((level) => {
+      let data = level.data()
 
-        newLevelList.push({
-          levelName: data.levelName,
-          numberOfGamemodes: data.numberOfGamemodes,
-          levelID: data.levelID,
-          uploadedBy: data.uploadedBy,
-        })
+      // Levels created before the move to Cloudinary have no url; skip them.
+      if (!data.url) return
+
+      newLevelList.push({
+        levelName: data.levelName,
+        numberOfGamemodes: data.numberOfGamemodes,
+        levelID: data.levelID,
+        uploadedBy: data.uploadedBy,
+        url: data.url,
       })
+    })
 
-      return newLevelList
-    }
-    let levelNameInfo = await getLevelNameInfo()
-
-    let getLevelImageInfo = async () => {
-      let newLevelList = []
-
-      for (const level of levelNameInfo) {
-        let downloadURL = await getDownloadURL(
-          ref(storage, `images/${level.levelID}`)
-        )
-        newLevelList.push({
-          levelName: level.levelName,
-          levelID: level.levelID,
-          numberOfGamemodes: level.numberOfGamemodes,
-          uploadedBy: level.uploadedBy,
-          url: downloadURL,
-        })
-      }
-      return newLevelList
-    }
-
-    let finalResult = await getLevelImageInfo()
-    setLevelList(finalResult)
+    setLevelList(newLevelList)
   }
 
   useEffect(() => {
