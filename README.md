@@ -1,15 +1,16 @@
-# About the project
+# Photo Tagging Game
 
 https://plant900.github.io/photo-tagging-game/
 
-The Photo Tagging Game is a simple "Where's Waldo"-style web app using React and Firebase for authentication and data storage.
+A "Where's Waldo"-style web app built with React, TypeScript and Vite, using Firebase for authentication and data storage. Players find characters hidden in an image against the clock, and signed-in users can create and upload their own levels.
 
-# Download
+## Development
 
-Clone the repository and run
-
-### `npm install`
-
-# To be added
-
-Allow users to create levels for others to play by uploading images with coordinates.
+```sh
+npm install
+npm run dev      # start the dev server
+npm run build    # typecheck and build to dist/
+npm run preview  # serve the production build locally
+npm run lint
+npm run deploy   # build and publish to GitHub Pages
+```

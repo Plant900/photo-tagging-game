@@ -17,15 +17,15 @@ type ImageContainerProps = {
 }
 
 export type GuessArea = {
-  x: Number
-  y: Number
+  x: number
+  y: number
 }
 
 type CharacterInfo = {
-  height: Number
-  width: Number
-  x: Number
-  y: Number
+  height: number
+  width: number
+  x: number
+  y: number
 }
 
 export const ImageContainer = ({

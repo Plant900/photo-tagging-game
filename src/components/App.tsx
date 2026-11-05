@@ -11,7 +11,7 @@ import { UserInfo } from './UserInfo'
 type TimerProps = {
   isTimerActive: boolean
   setIsTimerActive: React.Dispatch<React.SetStateAction<boolean>>
-  timerSeconds: Number
+  timerSeconds: number
   setTimerSeconds: React.Dispatch<React.SetStateAction<number>>
 }
 export const TimerContext = createContext<TimerProps>(null as any)
@@ -23,10 +23,10 @@ type GameStatusProps = {
 export const GameStatus = createContext<GameStatusProps>(null as any)
 
 export type CharacterInfo = {
-  height: Number
-  width: Number
-  x: Number
-  y: Number
+  height: number
+  width: number
+  x: number
+  y: number
 }
 export type GuessStatus = {
   character: CharacterInfo

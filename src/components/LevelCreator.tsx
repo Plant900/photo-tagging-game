@@ -5,7 +5,6 @@ import { LevelCreatorCharacterList } from './LevelCreatorCharacterList'
 import { doc, writeBatch } from 'firebase/firestore'
 import { db } from '../Firebase'
 import styles from '../styles/LevelCreator.module.css'
-import uniqid from 'uniqid'
 import { AuthContext } from '../contexts/AuthContext'
 
 const storage = getStorage()
@@ -16,8 +15,8 @@ type CharacterSet = {
 
 type CharacterInfo = {
   name: string
-  x: Number
-  y: Number
+  x: number
+  y: number
 }
 
 export type LevelInfo = {
@@ -118,7 +117,7 @@ export const LevelCreator = () => {
               e.target.files &&
               e.target.files[0].name.match(/.(jpg|jpeg|png)$/i)
             ) {
-              const renamedFile = new File([e.target.files[0]], uniqid())
+              const renamedFile = new File([e.target.files[0]], crypto.randomUUID())
               console.log('renamed', renamedFile)
               setSelectedImage(renamedFile)
 
