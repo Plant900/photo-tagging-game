@@ -1,207 +1,215 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { getDocs, collection, doc, setDoc, getDoc } from 'firebase/firestore'
-import { GameStatus, GuessStatus, TimerContext } from './App'
-import { db } from '../Firebase'
-import '../styles/Global.css'
-import { AuthContext } from '../contexts/AuthContext'
-import { Timer } from './Timer'
-import { CharacterList } from './CharacterList'
-import Draggable from 'react-draggable'
-import styles from '../styles/ImageContainer.module.css'
+import React, { useContext, useEffect, useState } from "react";
+import { getDocs, collection, doc, setDoc, getDoc } from "firebase/firestore";
+import { GameStatus, GuessStatus, TimerContext } from "./App";
+import { db } from "../Firebase";
+import "../styles/Global.css";
+import { AuthContext } from "../contexts/AuthContext";
+import { Timer } from "./Timer";
+import { CharacterList } from "./CharacterList";
+import Draggable from "react-draggable";
+import styles from "../styles/ImageContainer.module.css";
 
 type ImageContainerProps = {
-  url: string
-  title: string
-  levelID: string
-  gamemode: number
-}
+    url: string;
+    title: string;
+    levelID: string;
+    gamemode: number;
+};
 
 export type GuessArea = {
-  x: number
-  y: number
-}
+    x: number;
+    y: number;
+};
 
 type CharacterInfo = {
-  height: number
-  width: number
-  x: number
-  y: number
-}
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+};
 
 export const ImageContainer = ({
-  url,
-  title,
-  levelID,
-  gamemode,
+    url,
+    title,
+    levelID,
+    gamemode,
 }: ImageContainerProps) => {
-  let [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 })
-  let [isGuessSelectorActive, setIsGuessSelectorActive] = useState(false)
+    let [guessArea, setGuessArea] = useState<GuessArea>({ x: 0, y: 0 });
+    let [isGuessSelectorActive, setIsGuessSelectorActive] = useState(false);
 
-  let { setIsTimerActive, timerSeconds } = useContext(TimerContext)
-  let { user } = useContext(AuthContext)
-  let { setIsGameWon } = useContext(GameStatus)
-  let { guessStatus, setGuessStatus } = useContext(GuessStatus)
+    let { setIsTimerActive, timerSeconds } = useContext(TimerContext);
+    let { user } = useContext(AuthContext);
+    let { setIsGameWon } = useContext(GameStatus);
+    let { guessStatus, setGuessStatus } = useContext(GuessStatus);
 
-  const locationsRef = collection(
-    db,
-    `art/${levelID}/${gamemode}/data/characterLocations`
-  )
-  const scoresRef = collection(db, `art/${levelID}/${gamemode}/data/scores`)
+    const locationsRef = collection(
+        db,
+        `art/${levelID}/${gamemode}/data/characterLocations`,
+    );
+    const scoresRef = collection(db, `art/${levelID}/${gamemode}/data/scores`);
 
-  let checkGuess = async ({ x, y }: GuessArea, characterGuess: string) => {
-    let characterLocations = await getDocs(locationsRef)
+    let checkGuess = async ({ x, y }: GuessArea, characterGuess: string) => {
+        let characterLocations = await getDocs(locationsRef);
 
-    characterLocations.docs.map(async (doc) => {
-      let characterData = doc.data()
+        characterLocations.docs.map(async (doc) => {
+            let characterData = doc.data();
 
-      if (
-        x < characterData.x + characterData.width &&
-        x > characterData.x - characterData.width &&
-        y < characterData.y + characterData.height &&
-        y > characterData.y - characterData.height &&
-        characterData.name === characterGuess
-      ) {
-        console.log('correct guess')
+            if (
+                x < characterData.x + characterData.width &&
+                x > characterData.x - characterData.width &&
+                y < characterData.y + characterData.height &&
+                y > characterData.y - characterData.height &&
+                characterData.name === characterGuess
+            ) {
+                console.log("correct guess");
 
-        let updatedGuessStatus = [...guessStatus]
-        let index = updatedGuessStatus.findIndex((item) => item.name === doc.id)
-        updatedGuessStatus[index].hasBeenGuessed = true
+                let updatedGuessStatus = [...guessStatus];
+                let index = updatedGuessStatus.findIndex(
+                    (item) => item.name === doc.id,
+                );
+                updatedGuessStatus[index].hasBeenGuessed = true;
 
-        setGuessStatus(updatedGuessStatus)
-      } else {
-        console.log('incorrect guess')
-      }
-    })
-  }
-
-  useEffect(() => {
-    console.log(guessArea)
-  }, [guessArea])
-
-  useEffect(() => {
-    let setScore = async () => {
-      if (user) {
-        let uid = user.uid
-        let scores = await getDocs(scoresRef)
-        let update = true
-
-        scores.docs.map((item) => {
-          let data = item.data()
-          if (user?.displayName === data.name && data.time < timerSeconds) {
-            update = false
-          }
-        })
-
-        if (update) {
-          await setDoc(
-            doc(db, `art/${levelID}/${gamemode}/data/scores`, uid),
-            { name: String(user.displayName), time: timerSeconds },
-            { merge: true }
-          )
-        }
-      }
-    }
-
-    if (
-      guessStatus.length > 0 &&
-      guessStatus.every((item) => item.hasBeenGuessed === true)
-    ) {
-      console.log('You win')
-      setIsTimerActive(false)
-      setIsGameWon(true)
-      setScore()
-    }
-  }, [guessStatus])
-
-  useEffect(() => {
-    const getCharacters = async () => {
-      if (guessStatus.length === 0) {
-        let characters = await getDocs(locationsRef)
-
-        let status: GuessStatus = []
-
-        characters.docs.map((doc) => {
-          status.push({
-            character: { ...(doc.data() as CharacterInfo) },
-            name: doc.id,
-            hasBeenGuessed: false,
-          })
-        })
-        setGuessStatus(status)
-      }
-    }
-    getCharacters()
-  }, [])
-
-  return (
-    <div>
-      <Draggable axis="x" bounds="parent">
-        <div className={styles.timerCharacterListContainer}>
-          <Timer />
-          <CharacterList url={url} characterList={guessStatus} />
-        </div>
-      </Draggable>
-
-      <div className={styles.imageContainer}>
-        <div className={styles.imageContainerInterior}>
-          <img
-            draggable="false"
-            src={url}
-            onClick={(e) => {
-              setIsGuessSelectorActive(true)
-              let bounds = e.currentTarget.getBoundingClientRect()
-              let x = e.clientX - bounds.left
-              let y = e.clientY - bounds.top
-              setGuessArea({ x, y })
-            }}
-          />
-          {guessStatus.map((item) => {
-            if (item.hasBeenGuessed) {
-              return (
-                <div
-                  key={item.name}
-                  className={styles.correctGuessMarker}
-                  style={{
-                    position: 'absolute',
-                    left: `${Number(item.character.x) - 50}px`,
-                    top: `${Number(item.character.y) - 50}px`,
-                  }}
-                >
-                  &#x2713;
-                </div>
-              )
+                setGuessStatus(updatedGuessStatus);
+            } else {
+                console.log("incorrect guess");
             }
-          })}
-          <div
-            className={styles.guessCharacterSelector}
-            style={{
-              zIndex: '10600',
-              position: 'absolute',
-              visibility: `${
-                isGuessSelectorActive === true ? 'visible' : 'hidden'
-              }`,
-              left: `${guessArea?.x}px`,
-              top: `${guessArea?.y}px`,
-            }}
-            onClick={() => {
-              setIsGuessSelectorActive(!isGuessSelectorActive)
-            }}
-          >
-            {guessStatus.map((item) => {
-              return (
-                <div
-                  key={item.name}
-                  onClick={() => {
-                    checkGuess(guessArea, item.name)
-                  }}
-                >
-                  {item.name}
+        });
+    };
+
+    useEffect(() => {
+        console.log(guessArea);
+    }, [guessArea]);
+
+    useEffect(() => {
+        let setScore = async () => {
+            if (user) {
+                let uid = user.uid;
+                let scores = await getDocs(scoresRef);
+                let update = true;
+
+                scores.docs.map((item) => {
+                    let data = item.data();
+                    if (
+                        user?.displayName === data.name &&
+                        data.time < timerSeconds
+                    ) {
+                        update = false;
+                    }
+                });
+
+                if (update) {
+                    await setDoc(
+                        doc(db, `art/${levelID}/${gamemode}/data/scores`, uid),
+                        { name: String(user.displayName), time: timerSeconds },
+                        { merge: true },
+                    );
+                }
+            }
+        };
+
+        if (
+            guessStatus.length > 0 &&
+            guessStatus.every((item) => item.hasBeenGuessed === true)
+        ) {
+            console.log("You win");
+            setIsTimerActive(false);
+            setIsGameWon(true);
+            setScore();
+        }
+    }, [guessStatus]);
+
+    useEffect(() => {
+        const getCharacters = async () => {
+            if (guessStatus.length === 0) {
+                let characters = await getDocs(locationsRef);
+
+                let status: GuessStatus = [];
+
+                characters.docs.map((doc) => {
+                    status.push({
+                        character: { ...(doc.data() as CharacterInfo) },
+                        name: doc.id,
+                        hasBeenGuessed: false,
+                    });
+                });
+                setGuessStatus(status);
+            }
+        };
+        getCharacters();
+    }, []);
+
+    return (
+        <div>
+            <Draggable axis="x" bounds="parent">
+                <div className={styles.timerCharacterListContainer}>
+                    <Timer />
+                    <CharacterList url={url} characterList={guessStatus} />
                 </div>
-              )
-            })}
-          </div>
+            </Draggable>
+
+            <div className={styles.imageContainer}>
+                <div className={styles.imageContainerInterior}>
+                    <img
+                        draggable="false"
+                        src={url}
+                        onClick={(e) => {
+                            setIsGuessSelectorActive(true);
+                            let bounds =
+                                e.currentTarget.getBoundingClientRect();
+                            let x = e.clientX - bounds.left;
+                            let y = e.clientY - bounds.top;
+                            setGuessArea({ x, y });
+                        }}
+                    />
+                    {guessStatus.map((item) => {
+                        if (item.hasBeenGuessed) {
+                            return (
+                                <div
+                                    key={item.name}
+                                    className={styles.correctGuessMarker}
+                                    style={{
+                                        position: "absolute",
+                                        left: `${Number(item.character.x) - 50}px`,
+                                        top: `${Number(item.character.y) - 50}px`,
+                                    }}
+                                >
+                                    &#x2713;
+                                </div>
+                            );
+                        }
+                    })}
+                    <div
+                        className={styles.guessCharacterSelector}
+                        style={{
+                            zIndex: "10600",
+                            position: "absolute",
+                            visibility: `${
+                                isGuessSelectorActive === true
+                                    ? "visible"
+                                    : "hidden"
+                            }`,
+                            left: `${guessArea?.x}px`,
+                            top: `${guessArea?.y}px`,
+                        }}
+                        onClick={() => {
+                            setIsGuessSelectorActive(!isGuessSelectorActive);
+                        }}
+                    >
+                        {guessStatus.map((item) => {
+                            return (
+                                <div
+                                    key={item.name}
+                                    onClick={() => {
+                                        checkGuess(guessArea, item.name);
+                                    }}
+                                >
+                                    {item.name}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
-}
+    );
+};
